@@ -1,6 +1,7 @@
 # Coding: UTF-8
-path = File.expand_path('../', __FILE__)
-require File.join(path, 'mocodo/mocodo.rb')
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'mocodo'
 
 api_key = ''
 
