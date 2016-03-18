@@ -1,5 +1,10 @@
 require "mocodo/version"
-
-module Mocodo
-  # Your code goes here...
-end
+require "mocodo/character_recognition"
+require "mocodo/client"
+require "mocodo/dialogue"
+require "mocodo/goo_language_analysis"
+require "mocodo/image_recognition"
+require "mocodo/knowledge_qa"
+require "mocodo/sentence_understanding"
+require "mocodo/text_to_speech"
+require "mocodo/web_curation"
