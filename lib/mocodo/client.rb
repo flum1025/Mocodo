@@ -3,7 +3,7 @@ module Mocodo
     
   class Client
     attr_accessor :api_key, :https
-    z
+    
     def initialize(api_key)
       self.api_key = api_key
     end
