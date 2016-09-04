@@ -105,15 +105,6 @@ p recognize.local_image_recognition(File.join(path, 'mocodo/hqdefault.jpg')) #�
     }
     hiragana.hiragana "Fラン私立大学"
 
-###雑談対話
-  dialogue = Mocodo::Dialogue.new(api_key)
-  dialogue.configure config = {
-    :mode=>"dialog",
-    :context=>"1234567890",
-  }
-  dialogue.create_dialogue "こんにちは"
-  dialogue.get_current_data
-
 ###トレンド記事抽出
   ###ジャンル情報の取得
     genre = Mocodo::Genre.new(api_key)

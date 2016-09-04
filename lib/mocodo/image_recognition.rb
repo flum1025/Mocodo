@@ -1,47 +1,22 @@
-require 'net/https'
-require 'open-uri'
-require 'json'
+require 'httpclient'
 
 module Mocodo
-  class Recognize
-    
-    def initialize(api_key)
-      @client = Client.new(api_key)
+  module ImageRecognize
+    class Category < Base
+      EndPoint = "/imageRecognition/v1/concept/classify/"
+      def recognize(options={})
+        response = HTTPClient.new.post_content(build_url(EndPoint), options, {
+          "content-type" => "multipart/form-data; boundary=boundary",
+        })
+        JSON.parse(response, symbolize_names: true)
+      end
     end
     
-    def image_open(path)
-      if /^http/ =~ path
-        binary_image = File.binread(open(path))
-      else
-        binary_image = File.binread(File.open(path))
+    class Object < Base
+      EndPoint = "/imageRecognition/v1/recognize"
+      def recognize(image, options)
+        post(build_url(EndPoint, options), image, {'Content-Type' =>'application/octet-stream'})
       end
-      return binary_image
-    end
-        
-    def image_recognition(path, num=1)
-      uri = URI.parse("https://api.apigw.smt.docomo.ne.jp/imageRecognition/v1/recognize?APIKEY=#{@client.get_api_key}&recog=product-all&numOfCandidates=#{num}")
-      http = Net::HTTP.new('api.apigw.smt.docomo.ne.jp', 443)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' =>'application/octet-stream'})
-      request.body = File.binread(open(path)) #image_open(path) 
-      response = nil
-      http.start do |h|
-        response = JSON.parse(h.request(request).body, symbolize_names: true)
-      end
-      return response[:candidates]
-    end
-    
-    def local_image_recognition(path, num=1)
-      uri = URI.parse("https://api.apigw.smt.docomo.ne.jp/imageRecognition/v1/recognize?APIKEY=#{@client.get_api_key}&recog=product-all&numOfCandidates=#{num}")
-      http = Net::HTTP.new('api.apigw.smt.docomo.ne.jp', 443)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' =>'application/octet-stream'})
-      request.body = File.binread(File.open(path))
-      response = nil
-      http.start do |h|
-        response = JSON.parse(h.request(request).body, symbolize_names: true)
-      end
-      return response[:candidates]
     end
   end
 end

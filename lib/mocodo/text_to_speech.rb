@@ -1,82 +1,64 @@
-require 'net/https'
-require 'open-uri'
-require 'json'
-
 module Mocodo
-  class VirtualNarrator
-    attr_accessor :config
+  module TextToSpeech
+    module AiTalk
+      class AiTalkBase < Base
+        EndPoint = "/aiTalk/v1/textToSpeech"
+        def header(content)
+          {'Content-Type'=>content, 'Accept'=>'audio/L16'}
+        end
+      end
+
+      class Ssml < AiTalkBase
+        def speech text
+          post(build_url(EndPoint), text, header('application/ssml+xml'))
+        end
+      end
+
+      class Kana < AiTalkBase
+        def speech text
+          post(build_url(EndPoint), text, header('application/x-aitalk-kana'))
+        end
+      end
+
+      class JeitaKana < AiTalkBase
+        def speech text
+          post(build_url(EndPoint), text, header('text/x-jeita-6004-kana'))
+        end
+      end
+    end
+
+    class VoiceText < Base
+      EndPoint = "/voiceText/v1/textToSpeech"
+      
+      def speech(options={})
+        post(build_url(EndPoint), build_params(options), {'Content-Type'=>'application/x-www-form-urlencoded'})
+      end      
+    end
     
-    def initialize(api_key)
-      @client = Client.new(api_key)
-      self.config = {}
-    end
-    
-    def configure(options = {})
-      options.each do |key, value|
-        self.config[key] = value
+    module Crayon
+      class TextToSpeech < Base
+        EndPoint = "/crayon/v1/textToSpeech"
+        
+        def speech(options={})
+          post(build_url(EndPoint), options.to_json, {'Content-Type'=>'application/json'})
+        end 
       end
-    end
-    
-    def get_current_data(option=nil)
-      if option.nil?
-        return self.config
-      else
-        return self.config[option]
+      
+      class TextToSpeechSsml < Base
+        EndPoint = "/crayon/v1/textToSpeechSsml"
+        
+        def speech(options={})
+          post(build_url(EndPoint), options.to_json, {'Content-Type'=>'application/json'})
+        end 
       end
-    end
-    
-    def build_body(text)
-      body = {}
-      self.config.each { |sym|
-        body[sym[0].id2name] = sym[1]
-      }
-      body['TextData'] = text
-      return body.to_json
-    end
-  end
-  
-  class TextToSpeech < VirtualNarrator
-    def textToSpeech text
-      uri = URI.parse("https://api.apigw.smt.docomo.ne.jp/virtualNarrator/v1/textToSpeech?APIKEY=#{@client.get_api_key}")
-      http = Net::HTTP.new('api.apigw.smt.docomo.ne.jp', 443)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' =>'application/json'})
-      request.body = build_body(text)
-      response = nil
-      http.start do |h|
-        response = h.request(request).body
+      
+      class TextToSpeechKanaAccent < Base
+        EndPoint = "/crayon/v1/textToSpeechKanaAccent"
+        
+        def speech(options={})
+          post(build_url(EndPoint), options.to_json, {'Content-Type'=>'application/json'})
+        end 
       end
-      return response
-    end
-  end
-  
-  class TextToSpeechSsml < VirtualNarrator
-    def textToSpeech text
-      uri = URI.parse("https://api.apigw.smt.docomo.ne.jp/virtualNarrator/v1/textToSpeechSsml?APIKEY=#{@client.get_api_key}")
-      http = Net::HTTP.new('api.apigw.smt.docomo.ne.jp', 443)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' =>'application/json'})
-      request.body = build_body(text)
-      response = nil
-      http.start do |h|
-        response = h.request(request).body
-      end
-      return response
-    end
-  end
-  
-  class TextToSpeechKanaAccent < VirtualNarrator
-    def textToSpeech text
-      uri = URI.parse("https://api.apigw.smt.docomo.ne.jp/virtualNarrator/v1/textToSpeechKanaAccent?APIKEY=#{@client.get_api_key}")
-      http = Net::HTTP.new('api.apigw.smt.docomo.ne.jp', 443)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' =>'application/json'})
-      request.body = build_body(text)
-      response = nil
-      http.start do |h|
-        response = h.request(request).body
-      end
-      return response
     end
   end
 end
