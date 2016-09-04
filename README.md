@@ -376,3 +376,9 @@ https://dev.smt.docomo.ne.jp/?p=docs.api.page&api_name=knowledge_qa&p_name=api_1
 
 >>>文章画像レイアウト認識要求
 
+##License
+
+The MIT License
+
+-------
+(c) @2015 flum_
